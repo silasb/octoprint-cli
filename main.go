@@ -11,61 +11,62 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/codegangsta/cli"
 )
 
-var host = "http://10.5.5.15:5000/api/"
-var API_KEY = "1234"
+var host string
+var api_key string
 
-// var (
-// 	uploadCommand = flag.NewFlagSet("upload", flag.ExitOnError)
-// 	questionFlag  = uploadCommand.String("file", "", "Question that you are asking for")
-// )
+var defaultFlags = []cli.Flag{
+	cli.StringFlag{
+		Name:   "host",
+		Usage:  "Octoprint host *REQUIRED*",
+		EnvVar: "HOST",
+	},
+	cli.StringFlag{
+		Name:   "key",
+		Usage:  "Octoprint API key *REQUIRED*",
+		EnvVar: "KEY",
+	},
+}
 
-func init() {
+var beforeFunc = func(c *cli.Context) error {
+	host = c.String("host")
+	api_key = c.String("key")
 
-	// if len(os.Args) == 1 {
-	// 	fmt.Println("usage: siri <command> [<args>]")
-	// 	fmt.Println("The most commonly used git commands are: ")
-	// 	fmt.Println(" ask   Ask questions")
-	// 	fmt.Println(" send  Send messages to your contacts")
-	// 	os.Exit(2)
-	// }
+	if host == "" || api_key == "" {
+		return errors.New("missing required flags")
+	}
 
-	// switch os.Args[1] {
-	// case "upload":
-	//     os.Args[2:]
-	// 	uploadCommand.Parse()
-	// default:
-	// 	fmt.Printf("%q is not valid command.\n", os.Args[1])
-	// 	os.Exit(2)
-	// }
+	host = host + "/api/"
 
-	// if uploadCommand.Parsed() {
-	// 	if *questionFlag == "" {
-	// 		fmt.Println("Please supply the question using -question option.")
-	// 		os.Exit(2)
-	// 	}
-	// 	fmt.Printf("You asked: %q\n", *questionFlag)
-	// }
-
-	// username := flag.String("user", "root", "Username for this server")
-	// flag.Parse()
-	// fmt.Printf("Your username is %q.", *username)
-
+	return nil
 }
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "octoprint"
+	app.Compiled = time.Now()
+	app.Authors = []cli.Author{
+		cli.Author{
+			Name:  "Silas Baronda",
+			Email: "silas.baronda@gmail.com",
+		},
+	}
 	app.Usage = ""
+	app.Flags = defaultFlags
+	app.Before = beforeFunc
+
 	app.Commands = []cli.Command{
 		{
 			Name:      "upload",
 			Aliases:   []string{"u"},
 			Usage:     "upload files",
 			ArgsUsage: "[files]",
+			// Flags:     defaultFlags,
+			// Before: beforeFunc,
 			Action: func(c *cli.Context) error {
 				if c.NArg() > 0 {
 					for _, file := range c.Args() {
@@ -83,6 +84,8 @@ func main() {
 			Name:    "files",
 			Aliases: []string{"f"},
 			Usage:   "list files",
+			Flags:   defaultFlags,
+			Before:  beforeFunc,
 			Action: func(c *cli.Context) error {
 				job := getJob()
 				files := listFiles()
@@ -179,7 +182,7 @@ func listFiles() []File {
 }
 
 func callClient(req *http.Request) (*http.Response, error) {
-	req.Header.Set("X-API-KEY", API_KEY)
+	req.Header.Set("X-API-KEY", api_key)
 
 	client := &http.Client{}
 	res, err := client.Do(req)
