@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -78,13 +79,31 @@ func main() {
 				return errors.New("missing file")
 			},
 		},
+		{
+			Name:    "files",
+			Aliases: []string{"f"},
+			Usage:   "list files",
+			Action: func(c *cli.Context) error {
+				job := getJob()
+				files := listFiles()
+				for _, file := range files {
+					fmt.Print(file.Name)
+					if job.Job.File.Name == file.Name {
+						fmt.Println(" *")
+					} else {
+						println()
+					}
+				}
+				return nil
+			},
+		},
 	}
 
 	app.Run(os.Args)
 }
 
 func uploadFile(path string) string {
-	req, err := assembleRequest(path)
+	req, err := assembleUploadRequest(path)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -101,6 +120,64 @@ func uploadFile(path string) string {
 	// println(string(body))
 }
 
+type JobInfo struct {
+	File File
+}
+type Job struct {
+	Job JobInfo
+}
+
+func getJob() Job {
+	var j Job
+
+	req, err := getRequest(API("job"))
+	if err != nil {
+		log.Panic(err)
+	}
+
+	res, err := callClient(req)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&j)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return j
+}
+
+type File struct {
+	Name string `json:"name"`
+}
+type Files struct {
+	Files []File
+}
+
+func listFiles() []File {
+	req, err := getRequest(API("files"))
+	if err != nil {
+		log.Panic(err)
+	}
+
+	res, err := callClient(req)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// body, _ := ioutil.ReadAll(res.Body)
+
+	var f Files
+	err = json.NewDecoder(res.Body).Decode(&f)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// println(string(body))
+	return f.Files
+}
+
 func callClient(req *http.Request) (*http.Response, error) {
 	req.Header.Set("X-API-KEY", API_KEY)
 
@@ -110,7 +187,7 @@ func callClient(req *http.Request) (*http.Response, error) {
 	return res, err
 }
 
-func assembleRequest(path string) (*http.Request, error) {
+func assembleUploadRequest(path string) (*http.Request, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -147,21 +224,10 @@ func postRequest(url string, body *bytes.Buffer) (*http.Request, error) {
 	return req, err
 }
 
-func getRequest(url string) {
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("X-API-KEY", "1234")
-	res, err := client.Do(req)
+func getRequest(url string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url, nil)
 
-	if err != nil {
-		log.Panic(err)
-	} else {
-		defer res.Body.Close()
-		_, err := io.Copy(os.Stdout, res.Body)
-		if err != nil {
-			log.Panic(err)
-		}
-	}
+	return req, err
 }
 
 func API(resource string) string {
