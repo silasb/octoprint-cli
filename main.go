@@ -84,8 +84,8 @@ func main() {
 			Name:    "files",
 			Aliases: []string{"f"},
 			Usage:   "list files",
-			Flags:   defaultFlags,
-			Before:  beforeFunc,
+			//Flags:   defaultFlags,
+			//Before:  beforeFunc,
 			Action: func(c *cli.Context) error {
 				job := getJob()
 				files := listFiles()
