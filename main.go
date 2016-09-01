@@ -65,8 +65,6 @@ func main() {
 			Aliases:   []string{"u"},
 			Usage:     "upload files",
 			ArgsUsage: "[files]",
-			// Flags:     defaultFlags,
-			// Before: beforeFunc,
 			Action: func(c *cli.Context) error {
 				if c.NArg() > 0 {
 					for _, file := range c.Args() {
@@ -84,8 +82,6 @@ func main() {
 			Name:    "files",
 			Aliases: []string{"f"},
 			Usage:   "list files",
-			//Flags:   defaultFlags,
-			//Before:  beforeFunc,
 			Action: func(c *cli.Context) error {
 				job := getJob()
 				files := listFiles()
