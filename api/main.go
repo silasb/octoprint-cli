@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"bytes"
@@ -12,6 +12,9 @@ import (
 	"path/filepath"
 )
 
+var Host string
+var Api_key string
+
 type JobInfo struct {
 	File File
 }
@@ -19,7 +22,7 @@ type Job struct {
 	Job JobInfo
 }
 
-func getJob() Job {
+func GetJob() Job {
 	var j Job
 
 	req, err := getRequest(API("job"))
@@ -47,7 +50,7 @@ type Files struct {
 	Files []File
 }
 
-func listFiles() []File {
+func ListFiles() []File {
 	req, err := getRequest(API("files"))
 	if err != nil {
 		log.Panic(err)
@@ -71,7 +74,7 @@ func listFiles() []File {
 }
 
 func callClient(req *http.Request) (*http.Response, error) {
-	req.Header.Set("X-API-KEY", api_key)
+	req.Header.Set("X-API-KEY", Api_key)
 
 	client := &http.Client{}
 	res, err := client.Do(req)
@@ -123,10 +126,10 @@ func getRequest(url string) (*http.Request, error) {
 }
 
 func API(resource string) string {
-	return fmt.Sprintf(host+"%s", resource)
+	return fmt.Sprintf(Host+"%s", resource)
 }
 
-func uploadFile(path string) string {
+func UploadFile(path string) string {
 	req, err := assembleUploadRequest(path)
 	if err != nil {
 		log.Panic(err)
