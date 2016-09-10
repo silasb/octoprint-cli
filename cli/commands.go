@@ -45,4 +45,6 @@ var Commands []cli.Command = []cli.Command{
 			return nil
 		},
 	},
+
+	CmdRun(),
 }

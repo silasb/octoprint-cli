@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -71,6 +72,37 @@ func ListFiles() []File {
 
 	// println(string(body))
 	return f.Files
+}
+
+type Gcode struct {
+	Commands []string `json:"commands"`
+}
+
+func Run(commands []string) error {
+	g := &Gcode{commands}
+
+	body, err := json.Marshal(g)
+	if err != nil {
+		return err
+	}
+
+	req, err := postRequest(API("printer/command"), bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := callClient(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 204 {
+		return errors.New("Bad command")
+	}
+
+	return nil
 }
 
 func callClient(req *http.Request) (*http.Response, error) {
