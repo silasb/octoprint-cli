@@ -102,6 +102,9 @@ func Run(commands []string) error {
 		return errors.New("Bad command")
 	}
 
+	//body2, _ := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body2))
+
 	return nil
 }
 
