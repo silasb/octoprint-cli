@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/codegangsta/cli"
 	"github.com/silasb/octoprint-cli/api"
+	"github.com/urfave/cli"
 )
 
 func CmdUpload() cli.Command {

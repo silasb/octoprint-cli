@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/codegangsta/cli"
 	"github.com/silasb/octoprint-cli/api"
+	"github.com/urfave/cli"
 )
 
 //var host string

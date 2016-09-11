@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/codegangsta/cli"
 	"github.com/silasb/octoprint-cli/api"
+	"github.com/urfave/cli"
 )
 
 func CmdFiles() cli.Command {

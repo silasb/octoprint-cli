@@ -5,8 +5,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/codegangsta/cli"
 	"github.com/silasb/octoprint-cli/api"
+	"github.com/urfave/cli"
 )
 
 func CmdRun() cli.Command {
