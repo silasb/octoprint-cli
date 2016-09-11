@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
-	api "github.com/silasb/octoprint-cli/api"
+	"github.com/silasb/octoprint-cli/api"
 )
 
 //var host string
@@ -40,7 +40,8 @@ var beforeFunc = func(c *cli.Context) error {
 
 func Main() {
 	app := cli.NewApp()
-	app.Name = "octoprint"
+	app.Name = "octoprint-cli"
+	app.Version = "0.0.1"
 	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
 		cli.Author{
@@ -51,7 +52,6 @@ func Main() {
 	app.Usage = ""
 	app.Flags = defaultFlags
 	app.Before = beforeFunc
-
 	app.Commands = Commands
 
 	app.Run(os.Args)
