@@ -1,6 +1,6 @@
 # octoprint-cli
 
-## WIP - 8/14/2016 - Usable, but be wary
+## WIP - 9/13/2016 - Usable, but be wary
 
 Simple command line client for Octoprint.
 

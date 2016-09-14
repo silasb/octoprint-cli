@@ -4,24 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"log"
-	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 )
-
-var Host string
-var Api_key string
-
-type JobInfo struct {
-	File File
-}
-type Job struct {
-	Job JobInfo
-}
 
 func GetJob() Job {
 	var j Job
@@ -42,13 +27,6 @@ func GetJob() Job {
 	}
 
 	return j
-}
-
-type File struct {
-	Name string `json:"name"`
-}
-type Files struct {
-	Files []File
 }
 
 func ListFiles() []File {
@@ -72,10 +50,6 @@ func ListFiles() []File {
 
 	// println(string(body))
 	return f.Files
-}
-
-type Gcode struct {
-	Commands []string `json:"commands"`
 }
 
 func Run(commands []string) error {
@@ -106,19 +80,6 @@ func Run(commands []string) error {
 	//fmt.Println(string(body2))
 
 	return nil
-}
-
-type Temp struct {
-	Actual float32 `json:"actual"`
-	Offset float32 `json:"offset"`
-	Target float32 `json:"target"`
-}
-type Temperature struct {
-	Bed   Temp `json:"bed"`
-	Tool0 Temp `json:"tool0"`
-}
-type Printer struct {
-	Temperature Temperature `json:"temperature"`
 }
 
 func Info() (*Printer, error) {
@@ -156,53 +117,6 @@ func callClient(req *http.Request) (*http.Response, error) {
 	res, err := client.Do(req)
 
 	return res, err
-}
-
-func assembleUploadRequest(path string) (*http.Request, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("file", filepath.Base(path))
-	if err != nil {
-		return nil, err
-	}
-	_, err = io.Copy(part, file)
-
-	// if we need additional params to be passed in.
-	// for key, val := range params {
-	// 	_ = writer.WriteField(key, val)
-	// }
-
-	err = writer.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := postRequest(API("files/local"), body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	return req, err
-}
-
-func postRequest(url string, body *bytes.Buffer) (*http.Request, error) {
-	req, err := http.NewRequest("POST", url, body)
-
-	return req, err
-}
-
-func getRequest(url string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url, nil)
-
-	return req, err
-}
-
-func API(resource string) string {
-	return fmt.Sprintf(Host+"%s", resource)
 }
 
 func UploadFile(path string) string {
