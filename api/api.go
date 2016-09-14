@@ -108,6 +108,47 @@ func Run(commands []string) error {
 	return nil
 }
 
+type Temp struct {
+	Actual float32 `json:"actual"`
+	Offset float32 `json:"offset"`
+	Target float32 `json:"target"`
+}
+type Temperature struct {
+	Bed   Temp `json:"bed"`
+	Tool0 Temp `json:"tool0"`
+}
+type Printer struct {
+	Temperature Temperature `json:"temperature"`
+}
+
+func Info() (*Printer, error) {
+	req, err := getRequest(API("printer"))
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := callClient(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return nil, errors.New("Bad command")
+	}
+
+	//body2, _ := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body2))
+
+	var printer Printer
+	err = json.NewDecoder(res.Body).Decode(&printer)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return &printer, nil
+}
+
 func callClient(req *http.Request) (*http.Response, error) {
 	req.Header.Set("X-API-KEY", Api_key)
 

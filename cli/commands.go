@@ -6,4 +6,5 @@ var Commands []cli.Command = []cli.Command{
 	CmdUpload(),
 	CmdFiles(),
 	CmdRun(),
+	CmdInfo(),
 }
