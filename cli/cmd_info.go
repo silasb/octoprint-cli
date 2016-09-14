@@ -19,7 +19,13 @@ func CmdInfo() cli.Command {
 				return err
 			}
 
-			fmt.Printf("%+v", printer)
+			fmt.Print("Bed:")
+			fmt.Printf("\tActual: %0.2f", printer.Temperature.Bed.Actual)
+			fmt.Printf("\tTarget: %0.2f\n", printer.Temperature.Bed.Target)
+
+			fmt.Print("Tool0:")
+			fmt.Printf("\tActual: %0.2f", printer.Temperature.Tool0.Actual)
+			fmt.Printf("\tTarget: %0.2f\n", printer.Temperature.Tool0.Target)
 
 			return nil
 		},
