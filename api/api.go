@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -27,6 +28,34 @@ func GetJob() Job {
 	}
 
 	return j
+}
+
+func SelectFile(file File) error {
+	body := `{
+		"command": "select"
+	}`
+
+	resource := fmt.Sprintf("files/local/%s", file.Name)
+
+	req, err := postRequest(API(resource), bytes.NewBuffer([]byte(body)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := callClient(req)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 204 {
+		return errors.New("Bad command")
+	}
+
+	//body2, _ := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body2))
+
+	return nil
 }
 
 func ListFiles() []File {
