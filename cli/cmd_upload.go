@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/silasb/octoprint-cli/api"
 	"github.com/urfave/cli"
@@ -18,8 +19,12 @@ func CmdUpload() cli.Command {
 			if c.NArg() > 0 {
 				for _, file := range c.Args() {
 					fmt.Print("Uploading file: ", file)
-					status := api.UploadFile(file)
+					status, err := api.UploadFile(file)
 					fmt.Println(" =>", status)
+
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 				return nil
 			}

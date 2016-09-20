@@ -9,25 +9,25 @@ import (
 	"net/http"
 )
 
-func GetJob() Job {
-	var j Job
+func GetJob() (*Job, error) {
+	var job Job
 
 	req, err := getRequest(API("job"))
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
 	res, err := callClient(req)
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&j)
+	err = json.NewDecoder(res.Body).Decode(&job)
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
-	return j
+	return &job, nil
 }
 
 func SelectFile(file File) error {
@@ -58,15 +58,15 @@ func SelectFile(file File) error {
 	return nil
 }
 
-func ListFiles() []File {
+func ListFiles() ([]File, error) {
 	req, err := getRequest(API("files"))
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
 	res, err := callClient(req)
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
 	// body, _ := ioutil.ReadAll(res.Body)
@@ -74,11 +74,11 @@ func ListFiles() []File {
 	var f Files
 	err = json.NewDecoder(res.Body).Decode(&f)
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
 	// println(string(body))
-	return f.Files
+	return f.Files, nil
 }
 
 func Run(commands []string) error {
@@ -148,20 +148,20 @@ func callClient(req *http.Request) (*http.Response, error) {
 	return res, err
 }
 
-func UploadFile(path string) string {
+func UploadFile(path string) (string, error) {
 	req, err := assembleUploadRequest(path)
 	if err != nil {
-		log.Panic(err)
+		return "error", err
 	}
 
 	res, err := callClient(req)
 
 	if err != nil {
-		log.Panic(err)
+		return "error", err
 	}
 
 	// body, _ := ioutil.ReadAll(res.Body)
 
-	return res.Status
+	return res.Status, nil
 	// println(string(body))
 }

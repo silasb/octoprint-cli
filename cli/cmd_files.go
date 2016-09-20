@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/silasb/octoprint-cli/api"
@@ -19,8 +20,17 @@ func CmdFiles() cli.Command {
 				Aliases: []string{"l"},
 				Usage:   "list files",
 				Action: func(c *cli.Context) error {
-					job := api.GetJob()
-					files := api.ListFiles()
+					job, err := api.GetJob()
+					if err != nil {
+						log.Println(err)
+						return err
+					}
+
+					files, err := api.ListFiles()
+					if err != nil {
+						log.Println(err)
+						return err
+					}
 
 					for i, file := range files {
 						fmt.Printf("%d %s", i+1, file.Name)
@@ -43,10 +53,15 @@ func CmdFiles() cli.Command {
 						idx := c.Args().First()
 						i, err := strconv.Atoi(idx)
 						if err != nil {
+							log.Println(err)
 							return err
 						}
 
-						files := api.ListFiles()
+						files, err := api.ListFiles()
+						if err != nil {
+							log.Println(err)
+							return err
+						}
 						file := files[i-1]
 
 						err = api.SelectFile(file)
