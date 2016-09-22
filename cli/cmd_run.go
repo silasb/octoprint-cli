@@ -22,6 +22,8 @@ func CmdRun() cli.Command {
 		},
 		//ArgsUsage: "",
 		Action: func(c *cli.Context) error {
+			api := c.App.Metadata["api"].(*api.Client)
+
 			if c.NArg() > 0 {
 				// handle both stdin and argument based input
 

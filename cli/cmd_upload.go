@@ -16,6 +16,8 @@ func CmdUpload() cli.Command {
 		Usage:     "upload files",
 		ArgsUsage: "[files]",
 		Action: func(c *cli.Context) error {
+			api := c.App.Metadata["api"].(*api.Client)
+
 			if c.NArg() > 0 {
 				for _, file := range c.Args() {
 					fmt.Print("Uploading file: ", file)

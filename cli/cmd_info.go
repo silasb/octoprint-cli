@@ -13,6 +13,8 @@ func CmdInfo() cli.Command {
 		Aliases: []string{"i"},
 		Usage:   "info",
 		Action: func(c *cli.Context) error {
+			api := c.App.Metadata["api"].(*api.Client)
+
 			printer, err := api.Info()
 
 			if err != nil {

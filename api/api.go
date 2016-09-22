@@ -9,15 +9,51 @@ import (
 	"net/http"
 )
 
-func GetJob() (*Job, error) {
+type Client struct {
+	client *http.Client
+	cfg    Config
+}
+
+func (c *Client) API(resource string) string {
+	return fmt.Sprintf(c.cfg.Endpoint+"/%s", resource)
+}
+
+func New(cfg Config) (*Client, error) {
+	return newClient(&cfg)
+}
+
+func newClient(cfg *Config) (*Client, error) {
+	if cfg == nil {
+		cfg = &Config{}
+	}
+
+	client := &Client{
+		client: &http.Client{
+			Transport: cfg.Transport,
+		},
+		cfg: *cfg,
+	}
+
+	return client, nil
+}
+
+func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-KEY", c.cfg.Key)
+
+	return c.client.Do(req)
+}
+
+/* */
+
+func (c *Client) GetJob() (*Job, error) {
 	var job Job
 
-	req, err := getRequest(API("job"))
+	req, err := getRequest(c.API("job"))
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -30,20 +66,20 @@ func GetJob() (*Job, error) {
 	return &job, nil
 }
 
-func SelectFile(file File) error {
+func (c *Client) SelectFile(file File) error {
 	body := `{
 		"command": "select"
 	}`
 
 	resource := fmt.Sprintf("files/local/%s", file.Name)
 
-	req, err := postRequest(API(resource), bytes.NewBuffer([]byte(body)))
+	req, err := postRequest(c.API(resource), bytes.NewBuffer([]byte(body)))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 	if err != nil {
 		return err
 	}
@@ -58,13 +94,13 @@ func SelectFile(file File) error {
 	return nil
 }
 
-func ListFiles() ([]File, error) {
-	req, err := getRequest(API("files"))
+func (c *Client) ListFiles() ([]File, error) {
+	req, err := getRequest(c.API("files"))
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +117,7 @@ func ListFiles() ([]File, error) {
 	return f.Files, nil
 }
 
-func Run(commands []string) error {
+func (c *Client) Run(commands []string) error {
 	g := &Gcode{commands}
 
 	body, err := json.Marshal(g)
@@ -89,13 +125,13 @@ func Run(commands []string) error {
 		return err
 	}
 
-	req, err := postRequest(API("printer/command"), bytes.NewBuffer(body))
+	req, err := postRequest(c.API("printer/command"), bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 	if err != nil {
 		return err
 	}
@@ -111,13 +147,13 @@ func Run(commands []string) error {
 	return nil
 }
 
-func Info() (*Printer, error) {
-	req, err := getRequest(API("printer"))
+func (c *Client) Info() (*Printer, error) {
+	req, err := getRequest(c.API("printer"))
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -139,22 +175,13 @@ func Info() (*Printer, error) {
 	return &printer, nil
 }
 
-func callClient(req *http.Request) (*http.Response, error) {
-	req.Header.Set("X-API-KEY", Api_key)
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-
-	return res, err
-}
-
-func UploadFile(path string) (string, error) {
-	req, err := assembleUploadRequest(path)
+func (c *Client) UploadFile(path string) (string, error) {
+	req, err := c.assembleUploadRequest(path)
 	if err != nil {
 		return "error", err
 	}
 
-	res, err := callClient(req)
+	res, err := c.Do(req)
 
 	if err != nil {
 		return "error", err

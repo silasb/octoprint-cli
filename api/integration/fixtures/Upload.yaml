@@ -1,0 +1,47 @@
+---
+version: 1
+interactions:
+- request:
+    body: "--c2b2e378a642abed33470056c782722382a2a53c85853b135a7b10d19ef0\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"test.gcode\"\r\nContent-Type: application/octet-stream\r\n\r\n;Generated
+      with Cura_SteamEngine 13.11.2\nM109 T0 S220.000000\nT0\n;Sliced at: Wed 11-12-2013
+      16:53:12\n;Basic settings: Layer height: 0.2 Walls: 0.8 Fill: 20\n;Print time:
+      #P_TIME#\n;Filament used: #F_AMNT#m #F_WGHT#g\n;Filament cost: #F_COST#\n;M190
+      S70 ;Uncomment to add your own bed temperature line\n;M109 S220 ;Uncomment to
+      add your own temperature line\nG21        ;metric values\nG90        ;absolute
+      positioning\r\n--c2b2e378a642abed33470056c782722382a2a53c85853b135a7b10d19ef0--\r\n"
+    form: {}
+    headers:
+      Content-Type:
+      - multipart/form-data; boundary=c2b2e378a642abed33470056c782722382a2a53c85853b135a7b10d19ef0
+      X-Api-Key:
+      - "1234"
+    url: http://10.5.5.15:5000/api/files/local
+    method: POST
+  response:
+    body: "{\n  \"done\": true, \n  \"files\": {\n    \"local\": {\n      \"name\":
+      \"test.gcode\", \n      \"origin\": \"local\", \n      \"refs\": {\n        \"download\":
+      \"http://10.5.5.15:5000/downloads/files/local/test.gcode\", \n        \"resource\":
+      \"http://10.5.5.15:5000/api/files/local/test.gcode\"\n      }\n    }\n  }\n}"
+    headers:
+      Cache-Control:
+      - pre-check=0, no-cache, no-store, must-revalidate, post-check=0, max-age=0
+      Content-Length:
+      - "287"
+      Content-Type:
+      - application/json
+      Expires:
+      - "-1"
+      Location:
+      - http://10.5.5.15:5000/api/files/local/test.gcode
+      Pragma:
+      - no-cache
+      Server:
+      - TornadoServer/4.0.2
+      Set-Cookie:
+      - session=.eJyrVopPK0otzlCyKikqTdVRis9MUbKqVlJIUrJS8qtyLfcLSTeONIrK8nXxNYgMyciICgk1iKzyNI4KcTTxdw-s8A1xNI7KDbVVqtVRykxJzSvJLKnUSywtyYgvqSxIVbLKK83JQZJBMj3CyK08MdAWrLO0OLUoHqtcLQB_WDOe.CsTKaw.MRE053pP5WCD6KNwV2Cmd9-_blw;
+        Path=/; HttpOnly
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+    status: 201 CREATED
+    code: 201

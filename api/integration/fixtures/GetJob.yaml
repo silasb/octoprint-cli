@@ -1,0 +1,39 @@
+---
+version: 1
+interactions:
+- request:
+    body: ""
+    form: {}
+    headers:
+      X-Api-Key:
+      - "1234"
+    url: http://10.5.5.15:5000/api/job
+    method: GET
+  response:
+    body: "{\n  \"job\": {\n    \"averagePrintTime\": null, \n    \"estimatedPrintTime\":
+      null, \n    \"filament\": {\n      \"tool0\": {\n        \"length\": 0.0, \n
+      \       \"volume\": 0.0\n      }\n    }, \n    \"file\": {\n      \"date\":
+      1473566464, \n      \"name\": \"test.gcode\", \n      \"origin\": \"local\",
+      \n      \"size\": 409\n    }, \n    \"lastPrintTime\": null\n  }, \n  \"progress\":
+      {\n    \"completion\": 0, \n    \"filepos\": null, \n    \"printTime\": null,
+      \n    \"printTimeLeft\": null\n  }, \n  \"state\": \"Operational\"\n}"
+    headers:
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Content-Length:
+      - "470"
+      Content-Type:
+      - application/json
+      Expires:
+      - "-1"
+      Pragma:
+      - no-cache
+      Server:
+      - TornadoServer/4.0.2
+      Set-Cookie:
+      - session=eyJpZGVudGl0eS5hdXRoX3R5cGUiOm51bGwsImlkZW50aXR5LmlkIjp7IiBiIjoiWkhWdGJYaz0ifX0.CsOCmg.abQl45zPDD8JJAHsCqctTJNVCqw;
+        Path=/; HttpOnly
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+    status: 200 OK
+    code: 200

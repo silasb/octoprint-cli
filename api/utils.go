@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -22,11 +21,7 @@ func getRequest(url string) (*http.Request, error) {
 	return req, err
 }
 
-func API(resource string) string {
-	return fmt.Sprintf(Host+"%s", resource)
-}
-
-func assembleUploadRequest(path string) (*http.Request, error) {
+func (c *Client) assembleUploadRequest(path string) (*http.Request, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -51,7 +46,7 @@ func assembleUploadRequest(path string) (*http.Request, error) {
 		return nil, err
 	}
 
-	req, err := postRequest(API("files/local"), body)
+	req, err := postRequest(c.API("files/local"), body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return req, err

@@ -20,6 +20,8 @@ func CmdFiles() cli.Command {
 				Aliases: []string{"l"},
 				Usage:   "list files",
 				Action: func(c *cli.Context) error {
+					api := c.App.Metadata["api"].(*api.Client)
+
 					job, err := api.GetJob()
 					if err != nil {
 						log.Println(err)
@@ -49,6 +51,8 @@ func CmdFiles() cli.Command {
 				Aliases: []string{"s"},
 				Usage:   "select file for printing",
 				Action: func(c *cli.Context) error {
+					api := c.App.Metadata["api"].(*api.Client)
+
 					if c.NArg() > 0 {
 						idx := c.Args().First()
 						i, err := strconv.Atoi(idx)

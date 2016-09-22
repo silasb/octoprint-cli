@@ -9,9 +9,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-//var host string
-//var api_key string
-
 var defaultFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "host",
@@ -26,14 +23,30 @@ var defaultFlags = []cli.Flag{
 }
 
 var beforeFunc = func(c *cli.Context) error {
-	api.Host = c.String("host")
-	api.Api_key = c.String("key")
+	host := c.String("host")
+	key := c.String("key")
 
-	if api.Host == "" || api.Api_key == "" {
+	if host == "" || key == "" {
 		return errors.New("missing required flags")
 	}
 
-	api.Host = api.Host + "/api/"
+	host = host + "/api"
+
+	c.App.Metadata = map[string]interface{}{
+		"Host": host,
+		"Key":  key,
+	}
+
+	cfg := api.Config{
+		Key:      key,
+		Endpoint: host,
+	}
+	api, err := api.New(cfg)
+
+	if err != nil {
+		panic(err)
+	}
+	c.App.Metadata["api"] = api
 
 	return nil
 }
